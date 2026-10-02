@@ -20,9 +20,15 @@ public class VentanaControlPoblacional extends JFrame {
     private JButton btnAgregar;
     private JButton btnConsultar;
     private JButton btnModificar;
+    
     private JButton btnValidarIdioma;
     private JButton btnBuscarAnio;
     private JButton btnRangoPob;
+    
+    // Nuevos botones requeridos
+    private JButton btnContarPaises;
+    private JButton btnEliminarTodos;
+    private JButton btnGestionCiudades;
 
     private JTable tblResultados;
     private DefaultTableModel modeloTabla;
@@ -33,7 +39,7 @@ public class VentanaControlPoblacional extends JFrame {
         this.gestor = gestor;
 
         setTitle("Sistema de Control Poblacional");
-        setSize(860, 380);
+        setSize(860, 420); // Se aumentó el alto para acomodar los nuevos botones
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(null);
         setLocationRelativeTo(null);
@@ -90,7 +96,7 @@ public class VentanaControlPoblacional extends JFrame {
         txtIdioma.setBounds(120, 195, 140, 20);
         add(txtIdioma);
 
-        // Botones Operativos Principales
+        // --- Botones Operativos Principales ---
         btnAgregar = new JButton("Agregar");
         btnAgregar.setBounds(30, 235, 85, 25);
         add(btnAgregar);
@@ -103,7 +109,7 @@ public class VentanaControlPoblacional extends JFrame {
         btnModificar.setBounds(220, 235, 90, 25);
         add(btnModificar);
 
-        // Botones de Consultas Específicas
+        // --- Botones de Consultas Específicas ---
         btnValidarIdioma = new JButton("Validar Idioma");
         btnValidarIdioma.setBounds(30, 275, 125, 25);
         add(btnValidarIdioma);
@@ -116,12 +122,25 @@ public class VentanaControlPoblacional extends JFrame {
         btnRangoPob.setBounds(280, 275, 140, 25);
         add(btnRangoPob);
 
-        // Tabla de Resultados
+        // --- Nuevos Botones de Requerimientos ---
+        btnContarPaises = new JButton("Contar Países");
+        btnContarPaises.setBounds(30, 315, 125, 25);
+        add(btnContarPaises);
+
+        btnEliminarTodos = new JButton("Eliminar Todos");
+        btnEliminarTodos.setBounds(160, 315, 125, 25);
+        add(btnEliminarTodos);
+
+        btnGestionCiudades = new JButton("Gestión Ciudades");
+        btnGestionCiudades.setBounds(290, 315, 140, 25);
+        add(btnGestionCiudades);
+
+        // --- Tabla de Resultados ---
         String[] columnas = {"Código", "Nombre", "Continente", "Población", "Año Indep.", "Idioma"};
         modeloTabla = new DefaultTableModel(columnas, 0);
         tblResultados = new JTable(modeloTabla);
         JScrollPane scrollPane = new JScrollPane(tblResultados);
-        scrollPane.setBounds(430, 45, 390, 255);
+        scrollPane.setBounds(430, 45, 390, 295); // Se aumentó un poco el alto de la tabla para ajustarse a los nuevos botones
         add(scrollPane);
     }
 
@@ -301,6 +320,45 @@ public class VentanaControlPoblacional extends JFrame {
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(null, "Los valores de población deben ser números enteros.");
                 }
+            }
+        });
+
+        // --- Lógica de los Nuevos Botones ---
+
+        // 1. Contar Países
+        btnContarPaises.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int cantidad = gestor.contarPaisesIngresados();
+                JOptionPane.showMessageDialog(null, "Total de países ingresados en el sistema: " + cantidad, "Conteo de Países", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
+        // 2. Eliminar Todos los Países
+        btnEliminarTodos.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int confirmacion = JOptionPane.showConfirmDialog(null, 
+                    "¿Está seguro de que desea eliminar TODOS los países registrados?", 
+                    "Confirmar Eliminación", 
+                    JOptionPane.YES_NO_OPTION, 
+                    JOptionPane.WARNING_MESSAGE);
+                
+                if (confirmacion == JOptionPane.YES_OPTION) {
+                    gestor.eliminarTodosLosPaises();
+                    actualizarTabla(gestor.obtenerTodos()); // Refresca la tabla dejándola vacía
+                    JOptionPane.showMessageDialog(null, "Todos los registros de países han sido eliminados.");
+                }
+            }
+        });
+
+        // 3. Abrir Ventana de Ciudades
+        btnGestionCiudades.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Instancia la nueva ventana pasándole el gestor para mantener los datos centralizados
+                VentanaCiudad ventanaCiudad = new VentanaCiudad(gestor);
+                ventanaCiudad.setVisible(true);
             }
         });
     }

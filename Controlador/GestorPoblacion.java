@@ -1,15 +1,18 @@
 package Controlador;
 
 import Modelo.Pais;
+import Modelo.Ciudad; // Importar el nuevo modelo Ciudad
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class GestorPoblacion {
     private List<Pais> listaPaises;
+    private List<Ciudad> listaCiudades; // Nueva lista para gestionar ciudades
 
     public GestorPoblacion() {
         this.listaPaises = new ArrayList<>();
+        this.listaCiudades = new ArrayList<>(); // Inicializar la lista de ciudades
     }
 
     public void agregarPais(Pais pais) {
@@ -65,5 +68,37 @@ public class GestorPoblacion {
         return listaPaises.stream()
                 .filter(p -> p.getPoblacion() >= minPoblacion && p.getPoblacion() <= maxPoblacion)
                 .collect(Collectors.toList());
+    }
+
+    // --- NUEVOS REQUERIMIENTOS SOLICITADOS ---
+
+    // REQUERIMIENTO: Estructura de iteración para contar países ingresados
+    public int contarPaisesIngresados() {
+        int contador = 0;
+        // Se itera manualmente para cumplir con la regla de negocio
+        for (Pais pais : listaPaises) {
+            contador++;
+        }
+        return contador;
+    }
+
+    // REQUERIMIENTO: Estructura de repetición While para eliminar todos los países
+    public void eliminarTodosLosPaises() {
+        // Se usa while para eliminar hasta que la lista esté vacía
+        while (!listaPaises.isEmpty()) {
+            listaPaises.remove(0);
+        }
+    }
+
+    // --- MÉTODOS PARA GESTIÓN DE CIUDAD ---
+
+    public void agregarCiudad(Ciudad ciudad) {
+        if (ciudad != null) {
+            this.listaCiudades.add(ciudad);
+        }
+    }
+    
+    public List<Ciudad> obtenerTodasLasCiudades() {
+        return this.listaCiudades;
     }
 }

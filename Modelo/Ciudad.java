@@ -1,20 +1,29 @@
+// Archivo: Modelo/Ciudad.java
 package Modelo;
 
 public class Ciudad {
     private String nombre;
-    private String pais;
-    private String distrito;
-    private long poblacion;
+    private int poblacion;
+    private String region;
+    private boolean esCapital;
 
-    public Ciudad(String nombre, String pais, String distrito, long poblacion) {
+    public Ciudad(String nombre, int poblacion, String region, boolean esCapital) {
         this.nombre = nombre;
-        this.pais = pais;
-        this.distrito = distrito;
         this.poblacion = poblacion;
+        this.region = region;
+        this.esCapital = esCapital;
     }
 
+    // Getters y Setters
     public String getNombre() { return nombre; }
-    public String getPais() { return pais; }
-    public String getDistrito() { return distrito; }
-    public long getPoblacion() { return poblacion; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+
+    public int getPoblacion() { return poblacion; }
+    public void setPoblacion(int poblacion) { this.poblacion = poblacion; }
+
+    public String getRegion() { return region; }
+    public void setRegion(String region) { this.region = region; }
+
+    public boolean isEsCapital() { return esCapital; }
+    public void setEsCapital(boolean esCapital) { this.esCapital = esCapital; }
 }
