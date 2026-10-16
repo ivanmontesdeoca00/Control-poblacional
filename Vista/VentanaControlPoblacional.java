@@ -20,6 +20,7 @@ public class VentanaControlPoblacional extends JFrame {
     private JButton btnAgregar;
     private JButton btnConsultar;
     private JButton btnModificar;
+    private JButton btnVerListaCiudades;
     
     private JButton btnValidarIdioma;
     private JButton btnBuscarAnio;
@@ -109,6 +110,10 @@ public class VentanaControlPoblacional extends JFrame {
         btnModificar.setBounds(220, 235, 90, 25);
         add(btnModificar);
 
+        btnVerListaCiudades = new JButton("Ver Lista de Ciudades");
+        btnVerListaCiudades.setBounds(320, 235, 120, 25);
+        add(btnVerListaCiudades);
+
         // --- Botones de Consultas Específicas ---
         btnValidarIdioma = new JButton("Validar Idioma");
         btnValidarIdioma.setBounds(30, 275, 125, 25);
@@ -121,6 +126,7 @@ public class VentanaControlPoblacional extends JFrame {
         btnRangoPob = new JButton("Rango Población");
         btnRangoPob.setBounds(280, 275, 140, 25);
         add(btnRangoPob);
+
 
         // --- Nuevos Botones de Requerimientos ---
         btnContarPaises = new JButton("Contar Países");
@@ -154,29 +160,45 @@ public class VentanaControlPoblacional extends JFrame {
                     String cont = txtContinente.getText().trim();
                     String idioma = txtIdioma.getText().trim();
 
+                    // 1. Validar que los campos obligatorios no estén vacíos
                     if (cod.isEmpty() || nom.isEmpty()) {
-                        JOptionPane.showMessageDialog(null, "Debe ingresar al menos Código y Nombre.");
-                        return;
+                        throw new IllegalArgumentException("Debe ingresar al menos Código y Nombre.");
                     }
 
+                    // 2. Validar que el código no esté repetido
                     if (gestor.buscarPorCodigo(cod) != null) {
-                        JOptionPane.showMessageDialog(null, "Ya existe un país registrado con ese código.");
-                        return;
+                        throw new IllegalArgumentException("Ya existe un país registrado con ese código.");
                     }
 
+                    // 3. Conversión numérica (puede disparar NumberFormatException automáticamente)
                     long pob = Long.parseLong(txtPoblacion.getText().trim());
                     Integer anio = txtAnio.getText().trim().isEmpty() ? null : Integer.parseInt(txtAnio.getText().trim());
 
+                    // 4. Validar que la población no sea negativa
+                    if (pob < 0) {
+                        throw new IllegalArgumentException("La población no puede ser un número negativo.");
+                    }
+
+                    // Si todo es válido, se crea y guarda el país
                     Pais nuevoPais = new Pais(cod, nom, cont, pob, anio, idioma);
                     gestor.agregarPais(nuevoPais);
                     actualizarTabla(gestor.obtenerTodos());
                     limpiarCampos();
-                    JOptionPane.showMessageDialog(null, "País registrado correctamente.");
+                    JOptionPane.showMessageDialog(null, "País registrado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(null, "Población y Año deben ser valores numéricos.");
+                    // Captura errores al convertir texto a número en Población o Año
+                    JOptionPane.showMessageDialog(null, "Error de formato: Población y Año deben ser valores numéricos enteros.", "Error Numérico", JOptionPane.ERROR_MESSAGE);
+                } catch (IllegalArgumentException ex) {
+                    // Captura las excepciones de validación que lanzamos con 'throw'
+                    JOptionPane.showMessageDialog(null, ex.getMessage(), "Datos mal", JOptionPane.WARNING_MESSAGE);
+                } catch (Exception ex) {
+                    // Captura cualquier otro error inesperado (equivalente a un except general)
+                    JOptionPane.showMessageDialog(null, "Ocurrió un error inesperado al agregar el país: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
+
 
         btnConsultar.addActionListener(new ActionListener() {
             @Override
@@ -361,7 +383,18 @@ public class VentanaControlPoblacional extends JFrame {
                 ventanaCiudad.setVisible(true);
             }
         });
-    }
+        // 4. Ver Lista de Ciudades
+        btnVerListaCiudades.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Instancia la ventana de la tabla pasándole el gestor
+                VentanaListaCiudades ventanaListaCiudad = new VentanaListaCiudades(gestor);
+                ventanaListaCiudad.setVisible(true);
+            }
+        });
+        };
+
+
 
     private void actualizarTabla(List<Pais> lista) {
         modeloTabla.setRowCount(0);
